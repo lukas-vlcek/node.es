@@ -2,7 +2,7 @@ h1. Node gadgets for Elastic Search
 
 h2. Proxy server
 
-Basically, the "proxy":.proxy server can do the following for you:
+Basically, the "proxy":http://github.com/lukas-vlcek/node.es/tree/master/proxy/ server can do the following for you:
 * It can restrict access to Elastic Search REST API (defaults to _safe_ operations only).
 * You can provide handlers to modify HTTP client request (e.g. you can ensure that @size@ is not too big) and Elastic Search response (e.g. you can remove sensitive data).
 * It can round-robin client requests among active HTTP enabled nodes (it periodically refreshes list of active nodes), thus, it can provide a single URL for clients to communicate with Elastic Search cluster.

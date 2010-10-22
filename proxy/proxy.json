@@ -1,0 +1,11 @@
+{
+    "seeds" : ["localhost:9200"],
+    "refresh" : 2000,
+    "allow" : {
+        "GET" : ["(_search|_status|_mapping|_count)","/.+/.+/.+/_mlt","/.+/.+/.+]"],
+        "POST" : ["_search|_count","/.+/.+/.+/_mlt"],
+        "OPTIONS" : [".*"]
+    },
+    "port" : 8124,
+    "host": "127.0.0.1"
+}

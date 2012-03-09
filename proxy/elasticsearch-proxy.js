@@ -135,7 +135,7 @@
 
 */
 
-var sys = require('sys'),
+var util = require('util'),
     fs = require('fs'),
     http = require('http');
 
@@ -171,12 +171,19 @@ var ElasticSearchProxy = function(configuration, preRequest, postRequest) {
             try {
                 var content = fs.readFileSync(_conf,'utf8').replace('\n', '');
             } catch(err) {
-                sys.debug(err);
-                sys.debug("Can not load configuration from " + _conf);
-                sys.debug("Using the default configuration");
+                util.debug(err);
+                util.debug("Can not load configuration from " + _conf);
+                util.debug("Using the default configuration");
                 return;
             }
-            customConf = JSON.parse(content);
+            try {
+            	customConf = JSON.parse(content);
+            } catch (err) {
+                util.debug(err);
+                util.debug("Unable to parse file " + _conf);
+                util.debug("Check syntax errors");
+                return;
+            }
         } else {
             throw new Error("Unexpected format of constructor argument");
         }
@@ -276,14 +283,14 @@ var ElasticSearchProxy = function(configuration, preRequest, postRequest) {
 
     var init = function() {
         loadConfiguration();
-        sys.log("Using configuration:");
+        util.log("Using configuration:");
         console.log(proxyConf);
         precompileFilters();
         proxy = http.createServer(proxyRequestHandler)
                 .on("close",
                     function(errno){
                         var msg = "ElasticSearch proxy server stopped";
-                        sys.log(errno ? msg + ", errno:["+errno+"]" : msg);
+                        util.log(errno ? msg + ", errno:["+errno+"]" : msg);
                     }
                 );
         httpClient = new HttpClient(proxyConf.seeds);
@@ -291,7 +298,7 @@ var ElasticSearchProxy = function(configuration, preRequest, postRequest) {
 
     var _start = function(callback) {
         proxy.listen(proxyConf.port, proxyConf.host, function() {
-            sys.log("ElasticSearch proxy server started at http://"+proxyConf.host+":"+proxyConf.port+"/");
+            util.log("ElasticSearch proxy server started at http://"+proxyConf.host+":"+proxyConf.port+"/");
             httpClient.updateAllNodes(callback);
             intervalId = setInterval( function(){httpClient.updateAllNodes()}, proxyConf.refresh);
         });
@@ -358,7 +365,7 @@ var HttpClient = function(seeds) {
                 var c = http.createClient(s[1],s[0]);
 
                 c.addListener('error', function (err) {
-                    sys.log("Error using seed host: "+s[0]+":"+s[1]);
+                    util.log("Error using seed host: "+s[0]+":"+s[1]);
                     console.log(err);
                     _processedSeeds++;
                     if (_processedSeeds === _numberOfSeeds) {

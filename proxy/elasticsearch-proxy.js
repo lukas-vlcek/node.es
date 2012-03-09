@@ -181,8 +181,7 @@ var ElasticSearchProxy = function(configuration, preRequest, postRequest) {
             } catch (err) {
                 util.debug(err);
                 util.debug("Unable to parse file " + _conf);
-                util.debug("Check syntax errors");
-                return;
+                throw "Syntax error in config file";
             }
         } else {
             throw new Error("Unexpected format of constructor argument");
